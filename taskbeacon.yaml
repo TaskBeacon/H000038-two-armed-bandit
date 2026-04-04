@@ -1,0 +1,26 @@
+id: H000038
+slug: two-armed-bandit
+title: Two-Armed Bandit Task
+acquisition: behavior
+variant: html
+short_description: Browser companion for the Chinese two-armed bandit task with block-wise reward contingencies and cumulative score feedback
+cognitive_domain:
+  - reinforcement-learning
+  - value-based-decision-making
+  - adaptive-choice
+maturity: prototype
+version:
+  release_tag: v0.1.0-dev
+contracts:
+  psyflow_taps: v0.1.0
+evidence:
+  - README.md
+  - config/config.yaml
+  - main.ts
+  - src/run_trial.ts
+  - src/utils.ts
+  - assets/README.md
+  - .github/workflows/notify-psyflow-web.yml
+  - references/alignment-matrix.md
+  - references/validation-checklist.md
+maintainer: []
