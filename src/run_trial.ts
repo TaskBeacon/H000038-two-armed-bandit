@@ -1,4 +1,4 @@
-import { TrialBuilder, set_trial_context, type StimBank, type TaskSettings } from "psyflow-web";
+import { TrialBuilder, set_trial_context, type RuntimeView, type StimBank, type TaskSettings, type TrialSnapshot } from "psyflow-web";
 
 import {
   choice_label_for_side,
@@ -271,13 +271,13 @@ export function runTrial(
     }
   });
   choiceScreen.set_state({
-    choice_made: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).choice_made,
-    choice_forced: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).choice_forced,
-    choice_key: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).choice_key,
-    choice_side: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).choice_side,
-    choice_label: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).choice_label,
-    choice_rt: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).response_rt,
-    choice_prob: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).choice_prob
+    choice_made: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).choice_made,
+    choice_forced: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).choice_forced,
+    choice_key: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).choice_key,
+    choice_side: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).choice_side,
+    choice_label: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).choice_label,
+    choice_rt: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).response_rt,
+    choice_prob: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).choice_prob
   });
   choiceScreen.captureResponse({
     keys: [leftKey, rightKey],
@@ -293,11 +293,11 @@ export function runTrial(
     .addStim(options.stimBank.get("machine_right"))
     .addStim(options.stimBank.get("machine_left_label"))
     .addStim(options.stimBank.get("machine_right_label"))
-    .addStim((snapshot, runtime) => {
+    .addStim((snapshot: TrialSnapshot, runtime: RuntimeView) => {
       const decision = decisionResolver(snapshot as Record<string, any>, runtime);
       return options.stimBank.get(decision.choice_side === "left" ? "highlight_left" : "highlight_right");
     })
-    .addStim((snapshot, runtime) => {
+    .addStim((snapshot: TrialSnapshot, runtime: RuntimeView) => {
       const decision = decisionResolver(snapshot as Record<string, any>, runtime);
       return options.stimBank.get_and_format("target_prompt", {
         choice_label: decision.choice_label
@@ -317,8 +317,8 @@ export function runTrial(
     stim_id: "selection_confirmation"
   });
   confirmation.set_state({
-    choice_side: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).choice_side,
-    choice_label: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).choice_label
+    choice_side: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).choice_side,
+    choice_label: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).choice_label
   });
   confirmation.show({
     duration: confirmationDuration
@@ -326,7 +326,7 @@ export function runTrial(
 
   const feedback = trial
     .unit("outcome_feedback")
-    .addStim((snapshot, runtime) => {
+    .addStim((snapshot: TrialSnapshot, runtime: RuntimeView) => {
       const decision = decisionResolver(snapshot as Record<string, any>, runtime);
       const stimId = decision.reward_win ? "feedback_win" : "feedback_loss";
       return options.stimBank.get_and_format(stimId, {
@@ -348,9 +348,9 @@ export function runTrial(
     stim_id: "feedback"
   });
   feedback.set_state({
-    reward_win: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).reward_win,
-    reward_delta: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).reward_delta,
-    total_score: (snapshot, runtime) => decisionResolver(snapshot as Record<string, any>, runtime).score_after
+    reward_win: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).reward_win,
+    reward_delta: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).reward_delta,
+    total_score: (snapshot: TrialSnapshot, runtime: RuntimeView) => decisionResolver(snapshot as Record<string, any>, runtime).score_after
   });
   feedback.show({
     duration: feedbackDuration

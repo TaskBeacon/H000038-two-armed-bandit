@@ -9,7 +9,9 @@ import {
   parsePsyflowConfig,
   reset_trial_counter,
   set_trial_context,
-  type CompiledTrial
+  type CompiledTrial,
+  type RuntimeView,
+  type TrialSnapshot
 } from "psyflow-web";
 
 import { runTrial } from "./src/run_trial";
@@ -83,7 +85,7 @@ function createBlockBreakTrial(
     trial_index: blockIdx,
     condition: "block_break"
   });
-  const unit = trial.unit("block_break").addStim((_, runtime) => {
+  const unit = trial.unit("block_break").addStim((_snapshot: TrialSnapshot, runtime: RuntimeView) => {
     const blockRows = runtime.getReducedRows().filter((row) => String(row.block_id ?? "") === blockId);
     const summary = summarize_bandit_trials(blockRows, {
       initial_score: Number.isFinite(initialScore) ? initialScore : 1000
@@ -120,7 +122,7 @@ function createGoodbyeTrial(stimBank: StimBank, totalTrials: number, initialScor
     trial_index: totalTrials,
     condition: "good_bye"
   });
-  const unit = trial.unit("good_bye").addStim((_, runtime) => {
+  const unit = trial.unit("good_bye").addStim((_snapshot: TrialSnapshot, runtime: RuntimeView) => {
     const reducedRows = runtime.getReducedRows();
     const summary = summarize_bandit_trials(reducedRows, {
       initial_score: Number.isFinite(initialScore) ? initialScore : 1000
@@ -186,7 +188,7 @@ function createTrials(
     const plannedConditions = generate_bandit_schedule({
       block_idx: blockIdx,
       n_trials: trialsPerBlock,
-      block_probabilities
+      block_probabilities: blockProbabilities
     });
 
     for (const [trialIndex, condition] of plannedConditions.entries()) {
